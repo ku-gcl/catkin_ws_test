@@ -1,0 +1,2 @@
+test
+-DCATKIN_DEVEL_PREFIX=/home/ubuntu/pendulum_project/catkin_ws_test/devel -DCMAKE_INSTALL_PREFIX=/home/ubuntu/pendulum_project/catkin_ws_test/install -G Unix Makefiles

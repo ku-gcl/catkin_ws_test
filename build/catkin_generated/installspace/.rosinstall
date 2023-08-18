@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/ubuntu/pendulum_project/catkin_ws_test/install/setup.sh
