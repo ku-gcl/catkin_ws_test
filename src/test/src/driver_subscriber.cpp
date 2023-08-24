@@ -62,8 +62,6 @@ float motor_offset = 0.17; //volt
 //(R=1000, Q = diag(1, 1, 10, 10), f=100Hz)
 float Gain[4] = {29.87522919, 4.59857246, 0.09293, 0.37006248};
 
-
-
 void Kalman_main(){
      //---------------------------------------
     //Kalman Filter (all system)

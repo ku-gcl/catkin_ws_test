@@ -56,6 +56,10 @@ int main(int argc, char **argv) {
         if (count==10){
             ROS_INFO("Rotary encoder ready");
         }
+        if (count%100==0){
+            ROS_INFO("Publish theta2 from Encoder: %f", enc_msg.data);
+        }
+
         rate.sleep();
     }
 

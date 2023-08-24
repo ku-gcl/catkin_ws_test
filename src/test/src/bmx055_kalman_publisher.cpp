@@ -252,10 +252,10 @@ int main(int argc, char **argv) {
         imu_pub2.publish(imu_msg2);
 
         count += 1;
-        if (count % 100 == 0){
-            ROS_INFO("Publish theta1 from BMX055: %f", imu_msg1.data);
-            ROS_INFO("Publish theta1dot_temp from BMX055: %f", imu_msg2.data);
-        }
+        // if (count % 100 == 0){
+        //     ROS_INFO("Publish theta1 from BMX055: %f", imu_msg1.data);
+        //     ROS_INFO("Publish theta1dot_temp from BMX055: %f", imu_msg2.data);
+        // }
         
         ros::spinOnce();
         rate.sleep();
