@@ -59,8 +59,14 @@ float motor_offset = 0.17; //volt
 
 //=========================================================
 //Gain vector for the state feedback 
-//(R=1000, Q = diag(1, 1, 10, 10), f=100Hz)
+// (R=1000, Q = diag(1, 1, 10, 10), f=100Hz)
 float Gain[4] = {29.87522919, 4.59857246, 0.09293, 0.37006248};
+
+// //(R=1000, Q = diag(10, 10, 1, 1), f=100Hz)
+// float Gain[4] = {26.59058346, 4.08393671, 0.02957888, 0.31837809};
+
+// // (R=1000, Q = diag(100, 100, 1, 1), f=100Hz)
+// float Gain[4] = {26.61752566, 4.09754450, 0.02956402, 0.31832250};
 
 void Kalman_main(){
      //---------------------------------------
@@ -223,8 +229,10 @@ int main(int argc, char** argv)
     gpio_write(pi3,IN2, 0);
     gpio_write(pi3,LED_Y,0);
     ROS_INFO("Received initial data");
-    
+
+    // int count=0;
     while (ros::ok()) {
+        // ros::Time prev_time = ros::Time::now();
         gpio_write(pi3,LED_Y,1);
         gpio_write(pi3,LED_G,0);
         gpio_write(pi3,LED_R,0);
@@ -335,7 +343,16 @@ int main(int argc, char** argv)
             gpio_write(pi3,LED_R,1);
             motor_direction = 2;          
         }
+
         rate.sleep();
+
+        // 1ループあたりの処理時間を表示
+        // ros::Time current_time = ros::Time::now();
+        // ros::Duration elapsed_time = current_time - prev_time;
+        // count+=1;
+        // if (count%100==0){
+        //     ROS_INFO("Elapsed time: %.4f seconds", elapsed_time.toSec());
+        // }
     }
     gpio_write(pi3,IN1, 0);
     gpio_write(pi3,IN2, 0);

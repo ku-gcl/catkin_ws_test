@@ -60,3 +60,9 @@ rosnode list
 ```bash
 $ROS_IP
 ```
+
+## ゲインの計算
+
+ゲインの計算は以下のPythonプログラムで行う。
+
+[SolveRiccatiEquation.ipynb](https://colab.research.google.com/drive/1IcFUoy5qXGN6GaOZdWq6SWmxtl1Ce0IL?usp=sharing)

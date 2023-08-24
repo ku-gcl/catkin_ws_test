@@ -52,13 +52,13 @@ int main(int argc, char **argv) {
         std_msgs::Float64 enc_msg;
         enc_msg.data = theta2_data;
         enc_pub.publish(enc_msg);
-        count+=1;
-        if (count==10){
-            ROS_INFO("Rotary encoder ready");
-        }
-        if (count%100==0){
-            ROS_INFO("Publish theta2 from Encoder: %f", enc_msg.data);
-        }
+        // count+=1;
+        // if (count==10){
+        //     ROS_INFO("Rotary encoder ready");
+        // }
+        // if (count%100==0){
+        //     ROS_INFO("Publish theta2 from Encoder: %f", enc_msg.data);
+        // }
 
         rate.sleep();
     }
