@@ -3,6 +3,7 @@
 
 test/CMakeFiles/bmx055_kalman_publisher.dir/src/bmx055_kalman_publisher.cpp.o
  /home/ubuntu/pendulum_project/catkin_ws_test/src/test/src/bmx055_kalman_publisher.cpp
+ /home/ubuntu/pendulum_project/catkin_ws_test/src/test/src/matrix_operations.h
  /opt/ros/noetic/include/ros/advertise_options.h
  /opt/ros/noetic/include/ros/advertise_service_options.h
  /opt/ros/noetic/include/ros/assert.h

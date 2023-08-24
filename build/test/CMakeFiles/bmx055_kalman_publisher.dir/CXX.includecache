@@ -17,6 +17,10 @@ cmath
 -
 unistd.h
 -
+matrix_operations.h
+/home/ubuntu/pendulum_project/catkin_ws_test/src/test/src/matrix_operations.h
+
+/home/ubuntu/pendulum_project/catkin_ws_test/src/test/src/matrix_operations.h
 
 /opt/ros/noetic/include/ros/advertise_options.h
 ros/forwards.h

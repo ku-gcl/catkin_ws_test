@@ -3,6 +3,7 @@
 
 test/CMakeFiles/driver_subscriber.dir/src/driver_subscriber.cpp.o
  /home/ubuntu/pendulum_project/catkin_ws_test/src/test/src/driver_subscriber.cpp
+ /home/ubuntu/pendulum_project/catkin_ws_test/src/test/src/matrix_operations.h
  /opt/ros/noetic/include/ros/advertise_options.h
  /opt/ros/noetic/include/ros/advertise_service_options.h
  /opt/ros/noetic/include/ros/assert.h

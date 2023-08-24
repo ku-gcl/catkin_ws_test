@@ -3,6 +3,7 @@
 #include "pigpiod_if2.h"
 #include <cmath>
 #include <unistd.h>
+#include "matrix_operations.h"
 
 const int ACC_ADDR=0x19;
 const int GYR_ADDR=0x69;
@@ -35,77 +36,6 @@ float B_theta[2][1] = {{theta_update_interval}, {0}};         //const
 //"C" of the state equation
 float C_theta[1][2] = {{1, 0}};                               //const
 
-//=========================================================
-// Matrix common functions
-//=========================================================
-//Matrix addition
-void mat_add(float *m1, float *m2, float *sol, int row, int column)
-{
-    for(int i=0; i<row; i++)
-    {
-        for(int j=0; j<column; j++)
-        {
-            sol[i*column + j] = m1[i*column + j] + m2[i*column + j];    
-        }    
-    }
-    return;
-}
-
-//Matrix subtraction
-void mat_sub(float *m1, float *m2, float *sol, int row, int column)
-{
-    for(int i=0; i<row; i++)
-    {
-        for(int j=0; j<column; j++)
-        {
-            sol[i*column + j] = m1[i*column + j] - m2[i*column + j];    
-        }    
-    }
-    return;
-}
-
-//Matrix multiplication
-void mat_mul(float *m1, float *m2, float *sol, int row1, int column1, int row2, int column2)
-{
-    for(int i=0; i<row1; i++)
-    {
-        for(int j=0; j<column2; j++)
-        {
-            sol[i*column2 + j] = 0;
-            for(int k=0; k<column1; k++)
-            {
-                sol[i*column2 + j] += m1[i*column1 + k]*m2[k*column2 + j];    
-            }
-        }    
-    }
-    return;
-}
-
-//Matrix transposition
-void mat_tran(float *m1, float *sol, int row_original, int column_original)
-{
-    for(int i=0; i<row_original; i++)
-    {
-        for(int j=0; j<column_original; j++)
-        {
-            sol[j*row_original + i] = m1[i*column_original + j];    
-        }    
-    }
-    return;
-}
-
-//Matrix scalar maltiplication
-void mat_mul_const(float *m1,float c, float *sol, int row, int column)
-{
-    for(int i=0; i<row; i++)
-    {
-        for(int j=0; j<column; j++)
-        {
-            sol[i*column + j] = c * m1[i*column + j];    
-        }    
-    }
-    return;
-}
 
 float get_acc_data(int bus) {
     unsigned char data[4];
@@ -299,7 +229,7 @@ int main(int argc, char **argv) {
     
     ros::Rate rate(400);  // パブリッシュの頻度を設定 (400 Hz)
 
-    float theta1dot_temp;pigpio
+    float theta1dot_temp;
     int count=0;
     ROS_INFO("IMU ready");
     
