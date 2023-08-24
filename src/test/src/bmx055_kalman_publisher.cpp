@@ -325,7 +325,7 @@ int main(int argc, char **argv) {
             ROS_INFO("Publish theta1dot_temp from BMX055: %f", imu_msg2.data);
         }
         
-        
+        ros::spinOnce();
         rate.sleep();
     }
 
