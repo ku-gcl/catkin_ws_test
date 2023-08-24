@@ -8,6 +8,15 @@ cd ~/pendulum_project/catkin_ws_test
 catkin_make
 ```
 
+## pipgioの自動起動
+
+[Ubuntuで起動時に自動でShellScriptを実行する方法](https://qiita.com/MAI_onishi/items/74edc40a667dd2dc633e)
+
+```bash
+sudo nano /etc/systemd/system/pigpiod.service
+```
+
+
 # ROSの実行と終了
 以下のコマンドを実行
 
