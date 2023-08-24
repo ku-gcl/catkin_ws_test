@@ -1,13 +1,7 @@
 # Overview
 倒立振子のROSコード
 
-# コードのビルド
-
-```bash
-cd ~/pendulum_project/catkin_ws_test
-catkin_make
-```
-
+# Raspiの設定編
 ## pipgioの自動起動
 
 [Ubuntuで起動時に自動でShellScriptを実行する方法](https://qiita.com/MAI_onishi/items/74edc40a667dd2dc633e)
@@ -21,6 +15,14 @@ sudo nano /etc/systemd/system/pigpiod.service
 
 [コマンドラインで Ubuntu を固定 IP アドレスにする方法 (なるべく丁寧に解説)](https://qiita.com/noraworld/items/3e232fb7a25ed16c6a63)
 
+
+
+# コードのビルド
+
+```bash
+cd ~/pendulum_project/catkin_ws_test
+catkin_make
+```
 
 # ROSの実行と終了
 以下のコマンドを実行
