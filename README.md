@@ -16,6 +16,11 @@ catkin_make
 sudo nano /etc/systemd/system/pigpiod.service
 ```
 
+## 固定IP化
+以下の記事を参考に。
+
+[コマンドラインで Ubuntu を固定 IP アドレスにする方法 (なるべく丁寧に解説)](https://qiita.com/noraworld/items/3e232fb7a25ed16c6a63)
+
 
 # ROSの実行と終了
 以下のコマンドを実行
