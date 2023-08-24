@@ -299,8 +299,10 @@ int main(int argc, char **argv) {
     
     ros::Rate rate(400);  // パブリッシュの頻度を設定 (400 Hz)
 
-    float theta1dot_temp;
+    float theta1dot_temp;pigpio
     int count=0;
+    ROS_INFO("IMU ready");
+    
     while (ros::ok()) {
         std_msgs::Float64 c_var_msg;
         c_var_msg.data = theta_variance;

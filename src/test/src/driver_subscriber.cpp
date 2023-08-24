@@ -475,7 +475,7 @@ int main(int argc, char** argv)
             gpio_write(pi3,IN1, 1);
             gpio_write(pi3,IN2, 0);
             gpio_write(pi3,LED_Y,0);
-            gpio_write(pi3,LED_G,1);
+            gpio_write(pi3,LED_G,1); 
             motor_direction = 1;
         }      
         //drive the motor in reverse

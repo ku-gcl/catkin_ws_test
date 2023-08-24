@@ -26,3 +26,28 @@ roslaunch_pendulum
 roslaunch_kill
 ```
 
+# 複数のPCでROS接続
+[ROS講座20 複数のPCでROS接続1](https://qiita.com/srs/items/7d4aeb5e44138f97c770)
+
+## raspiのターミナルで
+
+```bash
+# raspiのip
+export ROS_IP=`hostname -I | cut -d' ' -f1`
+roslaunch_pendulum
+```
+
+## pcのターミナルで
+
+```bash
+export ROS_MASTER_URI=http://192.168.1.201:11311
+# pcのip
+export ROS_IP=`hostname -I | cut -d' ' -f1`
+rosnode list
+```
+
+環境変数の中身を確認するときは
+
+```bash
+$ROS_IP
+```
