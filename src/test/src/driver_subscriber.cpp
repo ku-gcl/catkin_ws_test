@@ -22,6 +22,8 @@ float theta_data;
 float theta_dot_data;
 float theta2_data;
 
+float VOLTAGE = 5.2;
+
 //=========================================================
 //Kalman filter (for all system estimation) variables
 //State vector
@@ -248,13 +250,13 @@ int main(int argc, char** argv)
         //------------------------------------------- 
         //predict the next step data: x'=Ax+Bu
         Vin = motor_value;
-        if(motor_value > 3.3f)
+        if(motor_value > VOLTAGE)
         {
-            Vin = 3.3f;
+            Vin = VOLTAGE;
         }
-        if(motor_value < -3.3f)
+        if(motor_value < -VOLTAGE)
         {
-            Vin = -3.3f;    
+            Vin = -VOLTAGE;    
         }
         mat_mul(A_x[0], x_data[0], A_x_x[0], 4, 4, 4, 1);//Ax_hat
         mat_mul_const(B_x[0], Vin , B_x_Vin[0], 4, 1);//Bu
@@ -292,7 +294,7 @@ int main(int argc, char** argv)
         }
         
         //calculate PWM pulse width
-        pwm_duty = int( motor_value*255.0f/3.3f );
+        pwm_duty = int( motor_value*255.0f/VOLTAGE );
         
         //drive the motor in forward
         if(pwm_duty>=0)
