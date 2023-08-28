@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <pigpiod_if2.h>
 #include "matrix_operations.h"
+#include <test/CustomState.h>
 
 const int IN1 = 6;   // Motor driver input 1
 const int IN2 = 5;   // Motor driver input 2
