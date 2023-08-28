@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <node name="bmx" pkg="test" type="bmx055_kalman_publisher" output="screen"/>
-    <node name="encoder" pkg="test" type="encoder_publisher" output="screen"/>
-    <node name="driver" pkg="test" type="driver_subscriber" output="screen"/>
-</launch>
