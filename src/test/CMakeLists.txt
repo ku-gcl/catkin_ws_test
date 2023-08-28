@@ -50,6 +50,7 @@ install(TARGETS encoder_publisher
 )
 
 add_executable(driver_subscriber src/driver_subscriber.cpp)
+add_dependencies(driver_subscriber ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(driver_subscriber
   ${catkin_LIBRARIES}
   pigpiod_if2

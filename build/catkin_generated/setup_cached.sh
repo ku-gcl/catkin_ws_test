@@ -8,4 +8,3 @@
 
 # modified environment variables
 export PWD='/home/ubuntu/pendulum_project/catkin_ws_test/build'
-export PYTHONPATH="/home/ubuntu/pendulum_project/catkin_ws_test/devel/lib/python3/dist-packages:$PYTHONPATH"
