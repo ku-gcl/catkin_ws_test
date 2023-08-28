@@ -2,4 +2,4 @@
 source_root_dir = '/home/ubuntu/pendulum_project/catkin_ws_test/src'
 whitelisted_packages = ''.split(';') if '' != '' else []
 blacklisted_packages = ''.split(';') if '' != '' else []
-underlay_workspaces = '/opt/ros/noetic'.split(';') if '/opt/ros/noetic' != '' else []
+underlay_workspaces = '/home/ubuntu/pendulum_project/catkin_ws_test/devel;/opt/ros/noetic'.split(';') if '/home/ubuntu/pendulum_project/catkin_ws_test/devel;/opt/ros/noetic' != '' else []
