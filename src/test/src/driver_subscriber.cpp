@@ -22,7 +22,7 @@ float theta_data;
 float theta_dot_data;
 float theta2_data;
 
-float VOLTAGE = 5.2;
+float VOLTAGE = 3.3;
 
 //=========================================================
 //Kalman filter (for all system estimation) variables
@@ -63,7 +63,7 @@ float motor_offset = 0.17; //volt
 //Gain vector for the state feedback 
 // (R=1000, Q = diag(1, 1, 10, 10), f=100Hz)
 float Gain[4] = {29.87522919, 4.59857246, 0.09293, 0.37006248};
-
+// float Gain[4] = {2.987522919, 0.459857246, 0.009293, 0.037006248};
 // //(R=1000, Q = diag(10, 10, 1, 1), f=100Hz)
 // float Gain[4] = {26.59058346, 4.08393671, 0.02957888, 0.31837809};
 
@@ -232,7 +232,7 @@ int main(int argc, char** argv)
     gpio_write(pi3,LED_Y,0);
     ROS_INFO("Received initial data");
 
-    // int count=0;
+    int count=0;
     while (ros::ok()) {
         // ros::Time prev_time = ros::Time::now();
         gpio_write(pi3,LED_Y,1);
@@ -282,6 +282,17 @@ int main(int argc, char** argv)
         { 
             motor_value += Gain[i] * x_data[i][0];
         }
+        if (count%100 == 0){ 
+            printf("----------------\n");
+            for(int i=0; i<4; i++)
+            { 
+                printf("state%d: %f\n", i, x_data[i][0]);
+            }      
+        }
+        // if (count%100 == 0){ 
+        //   printf("motor_value: %f\n", motor_value);
+        // }
+
         
         //offset
         if(motor_value > 0)
@@ -295,7 +306,10 @@ int main(int argc, char** argv)
         
         //calculate PWM pulse width
         pwm_duty = int( motor_value*255.0f/VOLTAGE );
-        
+        if (count%100 == 0){ 
+          printf("pwm duty cycle: %d\n", pwm_duty);
+        }
+        count+=1;
         //drive the motor in forward
         if(pwm_duty>=0)
         {
@@ -343,7 +357,7 @@ int main(int argc, char** argv)
             gpio_write(pi3,IN2, 1);
             gpio_write(pi3,LED_Y,0);
             gpio_write(pi3,LED_R,1);
-            motor_direction = 2;          
+            motor_direction = 2;
         }
 
         rate.sleep();
