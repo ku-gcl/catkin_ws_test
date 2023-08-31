@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <pigpiod_if2.h>
 #include "matrix_operations.h"
-#include <test/CustomState.h>
+// #include <test/CustomState.h>
 
 const int IN1 = 6;   // Motor driver input 1
 const int IN2 = 5;   // Motor driver input 2
@@ -109,6 +109,11 @@ void Kalman_main(){
 
 //=============================================================
 //callback関数の宣言
+void callback_state(const std_msgs::Float64::ConstPtr& c_var_msg)
+{
+    theta_variance = c_var_msg->data;
+    // ROS_INFO("Received theta_variance: %f", theta_variance);
+}
 void callback_cvar(const std_msgs::Float64::ConstPtr& c_var_msg)
 {
     theta_variance = c_var_msg->data;
@@ -201,6 +206,7 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "driver_subscriber");
     ros::NodeHandle nh;
 
+    // variance of theta1 (attitude)
     ros::Subscriber var_sub1 = nh.subscribe("c_var_topic", 10, callback_cvar);
     ros::Subscriber var_sub2 = nh.subscribe("cdot_var_topic", 10, callback_cdotvar);
     ros::Subscriber imu_sub1 = nh.subscribe("theta1_topic", 10, callback_imu1);
@@ -218,6 +224,12 @@ int main(int argc, char** argv)
     measure_variance_mat[2][2] = encoder_error * encoder_error;
     float encoder_rate_error = encoder_error / feedback_rate;
     measure_variance_mat[3][3] = encoder_rate_error * encoder_rate_error;
+
+    printf("----------------\n");
+    for(int i=0; i<4; i++)
+    { 
+        printf("variance%d: %f\n", i, measure_variance_mat[i][i]);
+    }      
 
     ros::Rate rate(1/feedback_rate);  // サブスクライブの頻度を設定 (100 Hz) 0.01 sec
 
@@ -281,13 +293,14 @@ int main(int argc, char** argv)
         //calculate Vin
         for(int i=0; i<4; i++)
         { 
-            motor_value += Gain[i] * x_data[i][0];
+            motor_value += Gain[i] * y[i][0];
         }
         if (count%100 == 0){ 
             printf("----------------\n");
             for(int i=0; i<4; i++)
             { 
-                printf("state%d: %f\n", i, x_data[i][0]);
+                // printf("state%d: %f\n", i, x_data[i][0]);
+                printf("state%d: %f\n", i, y[i][0]);
             }      
         }
         // if (count%100 == 0){ 
