@@ -15,6 +15,44 @@ sudo nano /etc/systemd/system/pigpiod.service
 
 [コマンドラインで Ubuntu を固定 IP アドレスにする方法 (なるべく丁寧に解説)](https://qiita.com/noraworld/items/3e232fb7a25ed16c6a63)
 
+設定ファイルを作成
+
+```bash
+touch /etc/netplan/50-cloud-init.yaml
+```
+
+設定ファイルを編集
+- `YOUR_ADMIRE_IP`: 希望のipアドレスを入力。`192.168.1.200`とか
+- `YOUR_NETWORK`: Wifiのネットワーク名
+- `YOUR_PASSWORD`: Wifiのパスワード
+
+```yaml:/etc/netplan/50-cloud-init.yaml
+network:
+  version: 2
+  wifis:
+    wlan0:
+      optional: false
+      dhcp4: false
+      dhcp6: false
+      addresses: [YOUR_ADMIRE_IP/24]
+      gateway4: 192.168.1.1
+      nameservers:
+        addresses: [8.8.8.8]
+      access-points:
+        "YOUR_NETWORK":
+            password: "YOUR_PASSWORD"
+```
+
+
+
+
+
+
+作成したyamlファイルを無効にする
+
+```
+sudo mv 50-cloud-init.yaml 50-cloud-init.yaml.cp
+```
 
 
 # コードのビルド
