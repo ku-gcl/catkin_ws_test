@@ -137,49 +137,51 @@ float Gain[4] = {29.30755259, 4.80340051, 0.02968736, 0.3196894};
 // get data
 float get_acc_data(int bus)
 {
-    unsigned char data[6];
-    // i2c_read_i2c_block_data(pi, bus, 0x04, (char *)data, 4);
-    i2c_read_i2c_block_data(pi, bus, 0x02, (char *)data, 6);
+    while (ros::ok()) {
+        unsigned char data[6];
+        // i2c_read_i2c_block_data(pi, bus, 0x04, (char *)data, 4);
+        i2c_read_i2c_block_data(pi, bus, 0x02, (char *)data, 6);
 
-    float acc_x = ((data[0] & 0xF0) + (data[1] * 256)) / 16;
-    if (acc_x > 2047)
-    {
-        acc_x -= 4096;
+        float acc_x = ((data[0] & 0xF0) + (data[1] * 256)) / 16;
+        if (acc_x > 2047)
+        {
+            acc_x -= 4096;
+        }
+
+        float acc_y = ((data[2] & 0xF0) + (data[3] * 256)) / 16;
+        if (acc_y > 2047)
+        {
+            acc_y -= 4096;
+        }
+
+        float acc_z = ((data[4] & 0xF0) + (data[5] * 256)) / 16;
+        if (acc_z > 2047)
+        {
+            acc_z -= 4096;
+        }
+
+        float theta1_deg = atan2(float(acc_z), float(acc_y)) * 57.29578f;
+
+        // convert to G, 1bit sign + 11bit (full scale +/- 2G)
+        acc_x = acc_x / 1024;
+        acc_y = acc_y / 1024;
+        acc_z = acc_z / 1024;
+        
+        ros::NodeHandle nh;
+        ros::Publisher imu_data_raw_pub = nh.advertise<sensor_msgs::Imu>("imu/data_raw", 10);
+
+        ros::Time current_time = ros::Time::now();
+        sensor_msgs::Imu imu_msg;
+        imu_msg.header.frame_id = "map";
+        imu_msg.header.stamp = current_time;
+        imu_msg.linear_acceleration.x = acc_x; // X軸の線形加速度
+        imu_msg.linear_acceleration.y = acc_y; // Y軸の線形加速度
+        imu_msg.linear_acceleration.z = acc_z;
+
+        imu_data_raw_pub.publish(imu_msg);
+        ros::spinOnce();
+        return theta1_deg;
     }
-
-    float acc_y = ((data[2] & 0xF0) + (data[3] * 256)) / 16;
-    if (acc_y > 2047)
-    {
-        acc_y -= 4096;
-    }
-
-    float acc_z = ((data[4] & 0xF0) + (data[5] * 256)) / 16;
-    if (acc_z > 2047)
-    {
-        acc_z -= 4096;
-    }
-
-    float theta1_deg = atan2(float(acc_z), float(acc_y)) * 57.29578f;
-
-    // convert to G, 1bit sign + 11bit (full scale +/- 2G)
-    acc_x = acc_x / 1024;
-    acc_y = acc_y / 1024;
-    acc_z = acc_z / 1024;
-    
-    ros::NodeHandle nh;
-    ros::Publisher imu_data_raw_pub = nh.advertise<sensor_msgs::Imu>("imu/data_raw", 10);
-
-    ros::Time current_time = ros::Time::now();
-    sensor_msgs::Imu imu_msg;
-    imu_msg.header.frame_id = "map";
-    imu_msg.header.stamp = current_time;
-    imu_msg.linear_acceleration.x = acc_x; // X軸の線形加速度
-    imu_msg.linear_acceleration.y = acc_y; // Y軸の線形加速度
-    imu_msg.linear_acceleration.z = acc_z;
-
-    imu_data_raw_pub.publish(imu_msg);
-
-    return theta1_deg;
 }
 
 // statistical data of accelerometer

@@ -27,7 +27,29 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(pendulum src/pendulum.cpp)
+# add_executable(pendulum src/pendulum.cpp)
+# target_link_libraries(pendulum
+#   ${catkin_LIBRARIES}
+#   pigpiod_if2
+#   pthread
+#   rt
+# )
+# install(TARGETS pendulum
+#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
+
+# add_executable(pendulum src/pendulum_debug.cpp)
+# target_link_libraries(pendulum
+#   ${catkin_LIBRARIES}
+#   pigpiod_if2
+#   pthread
+#   rt
+# )
+# install(TARGETS pendulum
+#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
+
+add_executable(pendulum src/pendulum2.cpp)
 target_link_libraries(pendulum
   ${catkin_LIBRARIES}
   pigpiod_if2
