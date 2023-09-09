@@ -111,3 +111,23 @@ $ROS_IP
 ゲインの計算は以下のPythonプログラムで行う。
 
 [SolveRiccatiEquation.ipynb](https://colab.research.google.com/drive/1IcFUoy5qXGN6GaOZdWq6SWmxtl1Ce0IL?usp=sharing)
+
+## データの表示
+
+実行する
+```bash
+ros_add && roslaunch test pendulum.launch
+```
+
+必要かわからないけど、10Hzでデータを表示する設定コマンド
+
+```bash
+ros_add
+rosrun test pendulum rate --all 10
+```
+
+データの表示コマンド
+
+```bash
+rostopic echo imu/data_raw
+```
