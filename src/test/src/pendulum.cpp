@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/MagneticField.h>
+#include "matrix_operations.h"
 
 std::thread thread1;
 std::thread thread2;
@@ -35,7 +36,7 @@ const int LED_G = 27;
 //=========================================================
 // Accelerometer and gyro statistical data
 int sample_num = 100;
-float meas_interval = 10000;    // us micro seconds
+float meas_interval = 10000; // us micro seconds
 float theta_mean;
 float theta_variance;
 float theta_dot_mean;
@@ -92,8 +93,8 @@ float P_x[4][4];
 //     {3.59797e-01}};
 
 float A_x[4][4] = {
-    { 1.00195470e+00, 1.00065176e-02, 0.00000000e+00, 3.87492726e-05},
-    { 3.90734698e-01, 1.00195470e+00, 0.00000000e+00, 7.67670390e-03},
+    {1.00195470e+00, 1.00065176e-02, 0.00000000e+00, 3.87492726e-05},
+    {3.90734698e-01, 1.00195470e+00, 0.00000000e+00, 7.67670390e-03},
     {-1.27692354e-03, -4.27676004e-06, 1.00000000e+00, 9.70978203e-03},
     {-2.52974140e-01, -1.27692354e-03, 0.00000000e+00, 9.42521734e-01}};
 float B_x[4][1] = {
@@ -129,185 +130,12 @@ float acc_x = 0.0;
 float acc_y = 0.0;
 float acc_z = 0.0;
 
-
-
-
-
 //=========================================================
 // Gain vector for the state feedback
 //(R=1000, Q = diag(1, 1, 10, 10), f=100Hz)
 // float Gain[4] = {29.87522919, 4.59857246, 0.09293, 0.37006248};
 
 float Gain[4] = {29.30755259, 4.80340051, 0.02968736, 0.3196894};
-//=========================================================
-// Matrix common functions
-//=========================================================
-// Matrix addition
-void mat_add(float *m1, float *m2, float *sol, int row, int column)
-{
-    for (int i = 0; i < row; i++)
-    {
-        for (int j = 0; j < column; j++)
-        {
-            sol[i * column + j] = m1[i * column + j] + m2[i * column + j];
-        }
-    }
-    return;
-}
-
-// Matrix subtraction
-void mat_sub(float *m1, float *m2, float *sol, int row, int column)
-{
-    for (int i = 0; i < row; i++)
-    {
-        for (int j = 0; j < column; j++)
-        {
-            sol[i * column + j] = m1[i * column + j] - m2[i * column + j];
-        }
-    }
-    return;
-}
-
-// Matrix multiplication
-void mat_mul(float *m1, float *m2, float *sol, int row1, int column1, int row2, int column2)
-{
-    for (int i = 0; i < row1; i++)
-    {
-        for (int j = 0; j < column2; j++)
-        {
-            sol[i * column2 + j] = 0;
-            for (int k = 0; k < column1; k++)
-            {
-                sol[i * column2 + j] += m1[i * column1 + k] * m2[k * column2 + j];
-            }
-        }
-    }
-    return;
-}
-
-// Matrix transposition
-void mat_tran(float *m1, float *sol, int row_original, int column_original)
-{
-    for (int i = 0; i < row_original; i++)
-    {
-        for (int j = 0; j < column_original; j++)
-        {
-            sol[j * row_original + i] = m1[i * column_original + j];
-        }
-    }
-    return;
-}
-
-// Matrix scalar maltiplication
-void mat_mul_const(float *m1, float c, float *sol, int row, int column)
-{
-    for (int i = 0; i < row; i++)
-    {
-        for (int j = 0; j < column; j++)
-        {
-            sol[i * column + j] = c * m1[i * column + j];
-        }
-    }
-    return;
-}
-
-// Matrix inversion (by Gaussian elimination)
-void mat_inv(float *m, float *sol, int column, int row)
-{
-    // allocate memory for a temporary matrix
-    float *temp = (float *)malloc(column * 2 * row * sizeof(float));
-
-    // make the augmented matrix
-    for (int i = 0; i < column; i++)
-    {
-        // copy original matrix
-        for (int j = 0; j < row; j++)
-        {
-            temp[i * (2 * row) + j] = m[i * row + j];
-        }
-
-        // make identity matrix
-        for (int j = row; j < row * 2; j++)
-        {
-            if (j - row == i)
-            {
-                temp[i * (2 * row) + j] = 1;
-            }
-            else
-            {
-                temp[i * (2 * row) + j] = 0;
-            }
-        }
-    }
-
-    // Sweep (down)
-    for (int i = 0; i < column; i++)
-    {
-        // pivot selection
-        float pivot = temp[i * (2 * row) + i];
-        int pivot_index = i;
-        float pivot_temp;
-        for (int j = i; j < column; j++)
-        {
-            if (temp[j * (2 * row) + i] > pivot)
-            {
-                pivot = temp[j * (2 * row) + i];
-                pivot_index = j;
-            }
-        }
-        if (pivot_index != i)
-        {
-            for (int j = 0; j < 2 * row; j++)
-            {
-                pivot_temp = temp[pivot_index * (2 * row) + j];
-                temp[pivot_index * (2 * row) + j] = temp[i * (2 * row) + j];
-                temp[i * (2 * row) + j] = pivot_temp;
-            }
-        }
-
-        // division
-        for (int j = 0; j < 2 * row; j++)
-        {
-            temp[i * (2 * row) + j] /= pivot;
-        }
-
-        // sweep
-        for (int j = i + 1; j < column; j++)
-        {
-            float temp2 = temp[j * (2 * row) + i];
-
-            // sweep each row
-            for (int k = 0; k < row * 2; k++)
-            {
-                temp[j * (2 * row) + k] -= temp2 * temp[i * (2 * row) + k];
-            }
-        }
-    }
-
-    // Sweep (up)
-    for (int i = 0; i < column - 1; i++)
-    {
-        for (int j = i + 1; j < column; j++)
-        {
-            float pivot = temp[(column - 1 - j) * (2 * row) + (row - 1 - i)];
-            for (int k = 0; k < 2 * row; k++)
-            {
-                temp[(column - 1 - j) * (2 * row) + k] -= pivot * temp[(column - 1 - i) * (2 * row) + k];
-            }
-        }
-    }
-
-    // copy result
-    for (int i = 0; i < column; i++)
-    {
-        for (int j = 0; j < row; j++)
-        {
-            sol[i * row + j] = temp[i * (2 * row) + (j + row)];
-        }
-    }
-    free(temp);
-    return;
-}
 
 //=========================================================
 // Accelerometer (BMX055)
@@ -340,9 +168,9 @@ float get_acc_data(int bus)
     float theta1_deg = atan2(float(acc_z), float(acc_y)) * 57.29578f;
 
     // convert to G, 1bit sign + 11bit (full scale +/- 2G)
-    acc_x = acc_x/1024;
-    acc_y = acc_y/1024;
-    acc_z = acc_z/1024;
+    acc_x = acc_x / 1024;
+    acc_y = acc_y / 1024;
+    acc_z = acc_z / 1024;
     // ROS_INFO("%f", acc_x);
 
     return theta1_deg;
@@ -541,15 +369,18 @@ void update_theta(int bus_acc, int bus_gyr)
 }
 
 // シグナルハンドラ関数
-void signalHandler(int signal) {
-    const char* key;
-    if (signal == SIGINT) 
+void signalHandler(int signal)
+{
+    const char *key;
+    if (signal == SIGINT)
     {
         key = "C";
-    } else if(signal == SIGTSTP) 
+    }
+    else if (signal == SIGTSTP)
     {
         key = "Z";
-    } else 
+    }
+    else
     {
         key = "Unknown";
     }
@@ -583,7 +414,7 @@ void signalHandler(int signal) {
     sleep(1);
     gpio_write(pi, LED_R, 0);
     gpio_write(pi, LED_Y, 0);
-    gpio_write(pi, LED_G, 0);   
+    gpio_write(pi, LED_G, 0);
 
     pigpio_stop(pi);
 
@@ -603,9 +434,9 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "imu_publisher");
     ros::NodeHandle nh;
     ros::Publisher imu_data_raw_pub = nh.advertise<sensor_msgs::Imu>("imu/data_raw", 10);
-    ros::Publisher imu_data = nh.advertise<sensor_msgs::Imu>("imu/data", 10);       // Kalman filter
+    ros::Publisher imu_data = nh.advertise<sensor_msgs::Imu>("imu/data", 10); // Kalman filter
     ros::Publisher mag_data_raw_pub = nh.advertise<sensor_msgs::MagneticField>("imu/mag", 10);
-    
+
     ros::Rate rate(10);
     // ros::Publisher var_pub1 = nh.advertise<std_msgs::Float64>("c_var_topic", 10);
     // ros::Publisher var_pub2 = nh.advertise<std_msgs::Float64>("cdot_var_topic", 10);
@@ -795,7 +626,7 @@ int main(int argc, char **argv)
         mat_mul(C_x[0], x_data_predict[0], C_x_x[0], 4, 4, 4, 1); // Cx'
         mat_sub(y[0], C_x_x[0], delta_y[0], 4, 1);                // y-Cx'
         mat_mul(G[0], delta_y[0], delta_x[0], 4, 4, 4, 1);        // G(y-Cx')
-        mat_add(x_data_predict[0], delta_x[0], X[0], 4, 1);  // x'+G(y-Cx')
+        mat_add(x_data_predict[0], delta_x[0], X[0], 4, 1);       // x'+G(y-Cx')
 
         // calculate covariance matrix: P=(I-GC)P'
         mat_mul(G[0], C_x[0], GC[0], 4, 4, 4, 4);              // GC
@@ -812,7 +643,7 @@ int main(int argc, char **argv)
         {
             Vin = -3.3f;
         }
-        mat_mul(A_x[0], X[0], A_x_x[0], 4, 4, 4, 1);       // Ax_hat
+        mat_mul(A_x[0], X[0], A_x_x[0], 4, 4, 4, 1);            // Ax_hat
         mat_mul_const(B_x[0], Vin, B_x_Vin[0], 4, 1);           // Bu
         mat_add(A_x_x[0], B_x_Vin[0], x_data_predict[0], 4, 1); // Ax+Bu
 
@@ -903,10 +734,10 @@ int main(int argc, char **argv)
         // start the angle update process
         update_theta_syn_flag = 1;
 
-
         // publish imu data
         count += 1;
-        if (count % 10 == 0){
+        if (count % 10 == 0)
+        {
             ros::Time current_time = ros::Time::now();
             sensor_msgs::Imu imu_msg;
             imu_msg.header.frame_id = "map";
@@ -934,7 +765,6 @@ int main(int argc, char **argv)
             imu_data_raw_pub.publish(imu_msg);
             ros::spinOnce();
         }
-
 
         // wait
         std::chrono::microseconds dura3(feedback_rate);
