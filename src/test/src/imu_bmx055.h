@@ -1,5 +1,6 @@
 #ifndef IMU_BMX055_H
 #define IMU_BMX055_H
+#include "pigpiod_if2.h"
 
 //=========================================================
 // Accelerometer (BMX055)
