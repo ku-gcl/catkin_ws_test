@@ -1,6 +1,13 @@
 # Overview
 倒立振子のROSコード
 
+# コードの説明
+- [pendulum.cpp](/src/test/src/pendulum.cpp)
+  - 以前のROSコード
+- [pendulum2.cpp](/src/test/src/pendulum2.cpp)
+  - LOGの取得のためにROSを使用するコード
+
+
 # Raspiの設定編
 ## pipgioの自動起動
 
